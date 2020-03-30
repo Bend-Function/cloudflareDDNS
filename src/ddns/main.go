@@ -31,7 +31,7 @@ func updateDNSRecord(zonesID, domainID, email, apiKey, subDomain, IP string) str
 	data.Content = IP
 	data.TTL = 120
 	data.Proxied = false
-	fmt.Println(data)
+	// fmt.Println(data)
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
 		// handle err
@@ -148,12 +148,12 @@ func getip() string {
 	buf.ReadFrom(resp.Body)
 
 	ren := string(buf.Bytes())
-	ipArray = append(ipArray, ren)
+	ipArray = append(ipArray, strings.Replace(ren, "\n", "", -1))
 	return "0"
 }
 
 func getAllIPs() []string {
-	for i := 0; i < 60; i++ {
+	for i := 0; i < 30; i++ {
 		go getip()
 	}
 	time.Sleep(time.Second * 9)
@@ -170,6 +170,7 @@ func getAllIPs() []string {
 
 func main() {	
 	var subDomainArray []string
+	// make config struct
 	type conf struct {
 		Email           string `json:"email"`
 		APIKey          string `json:"apiKey"`
@@ -177,7 +178,7 @@ func main() {
 		SubDomainArray  []string `json:"subDomainArray"`
 		IPdetectAddress string `json:"IPdetectAddress"`
 	}
-
+	// read config file
 	file, _ := os.Open("src/config/conf.json")
 	defer file.Close()
 	decoder := json.NewDecoder(file)
@@ -186,28 +187,52 @@ func main() {
 	if err != nil {
 		fmt.Println("error:", err)
 	}
-
+	// make old version value equle to new version
 	email := config.Email
 	apiKey := config.APIKey
 	mainDomain := config.MainDomain
 	subDomainArray = config.SubDomainArray
 
-	fmt.Print(subDomainArray)
-	// IP := "167.123.123.123"
+	// print domain that will be update
+	fmt.Println("These domains will be update")
+	for i := 0; i < len(subDomainArray); i++ {
+		fmt.Println(subDomainArray[i] + "." + mainDomain)
+	}
+
+	// get zonesID
 	zonesID := getZonesID(email, apiKey, mainDomain)
 
-	// fmt.Print(domainID)
+	// get local ip 
 	var IP []string
+	// get no more than 3 times
 	for j := 0; j < 3 ; j ++{
 		IP = getAllIPs()
-		fmt.Println(IP)
+		// if get ips == domains break
 		if len(IP) == len(subDomainArray) {
 			break
 		}
 	}
+	if len(IP) == len(subDomainArray){
+		fmt.Println("Number of ip is equal to number of domains")
+		for j := 0; j < len(IP); j++ {
+			fmt.Println(IP[j] + "--->" + subDomainArray[j] + "." + mainDomain)
+		}
+	}else{
+		fmt.Println("Number of ip ISN'T equal to number of domains!!")
+		var tempNum int
+		if len(subDomainArray) < len(IP){
+			tempNum = len(subDomainArray)
+		}else{
+			tempNum = len(IP)
+		}
+		for j := 0; j < tempNum; j++ {
+			fmt.Println(IP[j] + "--->" + subDomainArray[j] + "." + mainDomain)
+		}
+	}
+
 
 	for i := 0; i < len(subDomainArray); i++ {
 		domainID := getDonmainID(email, apiKey, zonesID, subDomainArray[i]+"."+mainDomain)
-		fmt.Println(updateDNSRecord(zonesID, domainID, email, apiKey, subDomainArray[i], strings.Replace(IP[i], "\n", "", -1)))
+		fmt.Println(updateDNSRecord(zonesID, domainID, email, apiKey, subDomainArray[i], IP[i]))
 	}
 }
