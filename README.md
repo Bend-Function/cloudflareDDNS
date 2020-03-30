@@ -50,7 +50,7 @@ Like ["a", "b", "c"]
 }
 ```
 ## Run program
-
+0. Download program from release page or find it in ./bin
 1. Open a terminal.
 2. Into the directory where the program is.
 3. Make sure you know where the config file is.
