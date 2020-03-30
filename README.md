@@ -1,5 +1,5 @@
 # CloudflareDDNS
-This program is based on [Cloudflare API V4](https://api.cloudflare.com/#getting-started-responses).
+This program is based on [Cloudflare API V4](https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record).
 
 # Description
 
