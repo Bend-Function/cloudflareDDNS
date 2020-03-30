@@ -58,7 +58,8 @@ func updateDNSRecord(zonesID, domainID, email, apiKey, subDomain, IP string) str
 	res := string(buf.Bytes())
 	state := strings.Contains(res, `"success":true`)
 	if state == true {
-		return "updateDNSRecord---SUCCEESS!"
+		rtn := data.Name + "  updateDNSRecord---SUCCEESS!"
+		return rtn
 	} else {
 		fmt.Println(res)
 		return "updateDNSRecord---ERROR!"
@@ -179,14 +180,34 @@ func main() {
 		SubDomainArray  []string `json:"subDomainArray"`
 		IPdetectAddress string   `json:"IPdetectAddress"`
 	}
+	// get arguments
+	args := os.Args
+	//set default config path
+	confpath := "src/config/conf.json"
+	if len(args) == 3 && args[1] == "-c" {
+		confpath = args[2]
+	} else if len(args) >= 2 {
+		fmt.Println("Usage: [-c configPath] ")
+		fmt.Println("-c: config file path")
+		fmt.Println("repo url: https://github.com/Bend-Function/cloudflareDDNS")
+		os.Exit(1)
+	} else {
+		fmt.Println("Program will use default config path")
+		fmt.Println("src/config/conf.json")
+	}
 	// read config file
-	file, _ := os.Open("src/config/conf.json")
+	file, err := os.Open(confpath)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	defer file.Close()
 	decoder := json.NewDecoder(file)
 	config := conf{}
-	err := decoder.Decode(&config)
+	err = decoder.Decode(&config)
 	if err != nil {
 		// handle err
+		fmt.Println(err)
 	}
 	// make old version value equle to new version
 	email := config.Email
