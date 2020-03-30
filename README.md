@@ -56,7 +56,7 @@ Like ["a", "b", "c"]
 3. Make sure you know where the config file is.
 4. Use command line to run the program.
 ```
-.\cloudflareDDNS-win64.exe -c config.json
+> .\cloudflareDDNS-win64.exe -c config.json
 ```
 Linux is as same as Windows.
 ## How to get Cloudflare Global API Key
