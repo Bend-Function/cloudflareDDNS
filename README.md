@@ -34,7 +34,7 @@ Like ["a", "b", "c"]
 
 + IPdetectAddress: A url which can return your IP address. In china you can use "http://members.3322.org/dyndns/getip" to get your IP.
 
-    - WORNING: This url must only return ip!
+    - WARNING: This url must only return ip!
 
 
 
@@ -56,9 +56,13 @@ Like ["a", "b", "c"]
 3. Make sure you know where the config file is.
 4. Use command line to run the program.
 ```
-> .\cloudflareDDNS-win64.exe -c config.json
+# .\cloudflareDDNS-linux64 -c config.json
 ```
-Linux is as same as Windows.
+5. If you are first run this program and you are using linux.Please run this command first.
+```
+# sudo chmod +x .\cloudflareDDNS-linux64
+```
+Windows is as same as Linux.
 ## How to get Cloudflare Global API Key
 
 >### View API Key
