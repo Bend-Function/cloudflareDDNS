@@ -1,6 +1,6 @@
 {
     "email" : "your@Email",
-	"apiKey" : "your Global key",
+    "apiKey" : "your Global key",
     "mainDomain" : "your mainDomain like 'google.com' not 'www.google.com'",
     "subDomainArray" : ["a", "b", "c"],
     "IPdetectAddress" : "http://members.3322.org/dyndns/getip"
