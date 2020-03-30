@@ -1,3 +1,4 @@
+//Author: BendFunction
 package main
 
 import (
@@ -5,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
-	"os"
 )
 
 var ipArray []string
@@ -138,7 +139,7 @@ func search(key string, list []string) bool {
 	return false
 }
 
-func getip() string {
+func getip(detectURL string) string {
 	resp, err := http.Get("http://members.3322.org/dyndns/getip")
 	if err != nil {
 	}
@@ -152,9 +153,9 @@ func getip() string {
 	return "0"
 }
 
-func getAllIPs() []string {
+func getAllIPs(detectURL string) []string {
 	for i := 0; i < 30; i++ {
-		go getip()
+		go getip(detectURL)
 	}
 	time.Sleep(time.Second * 9)
 	var cutIP []string
@@ -168,15 +169,15 @@ func getAllIPs() []string {
 	return cutIP
 }
 
-func main() {	
+func main() {
 	var subDomainArray []string
 	// make config struct
 	type conf struct {
-		Email           string `json:"email"`
-		APIKey          string `json:"apiKey"`
-		MainDomain      string `json:"mainDomain"`
+		Email           string   `json:"email"`
+		APIKey          string   `json:"apiKey"`
+		MainDomain      string   `json:"mainDomain"`
 		SubDomainArray  []string `json:"subDomainArray"`
-		IPdetectAddress string `json:"IPdetectAddress"`
+		IPdetectAddress string   `json:"IPdetectAddress"`
 	}
 	// read config file
 	file, _ := os.Open("src/config/conf.json")
@@ -185,7 +186,7 @@ func main() {
 	config := conf{}
 	err := decoder.Decode(&config)
 	if err != nil {
-		fmt.Println("error:", err)
+		// handle err
 	}
 	// make old version value equle to new version
 	email := config.Email
@@ -202,27 +203,27 @@ func main() {
 	// get zonesID
 	zonesID := getZonesID(email, apiKey, mainDomain)
 
-	// get local ip 
+	// get local ip
 	var IP []string
 	// get no more than 3 times
-	for j := 0; j < 3 ; j ++{
-		IP = getAllIPs()
+	for j := 0; j < 3; j++ {
+		IP = getAllIPs(config.IPdetectAddress)
 		// if get ips == domains break
 		if len(IP) == len(subDomainArray) {
 			break
 		}
 	}
-	if len(IP) == len(subDomainArray){
+	if len(IP) == len(subDomainArray) {
 		fmt.Println("Number of ip is equal to number of domains")
 		for j := 0; j < len(IP); j++ {
 			fmt.Println(IP[j] + "--->" + subDomainArray[j] + "." + mainDomain)
 		}
-	}else{
+	} else {
 		fmt.Println("Number of ip ISN'T equal to number of domains!!")
 		var tempNum int
-		if len(subDomainArray) < len(IP){
+		if len(subDomainArray) < len(IP) {
 			tempNum = len(subDomainArray)
-		}else{
+		} else {
 			tempNum = len(IP)
 		}
 		for j := 0; j < tempNum; j++ {
@@ -230,7 +231,7 @@ func main() {
 		}
 	}
 
-
+	// updateDNSRecord
 	for i := 0; i < len(subDomainArray); i++ {
 		domainID := getDonmainID(email, apiKey, zonesID, subDomainArray[i]+"."+mainDomain)
 		fmt.Println(updateDNSRecord(zonesID, domainID, email, apiKey, subDomainArray[i], IP[i]))
