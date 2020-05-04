@@ -11,6 +11,8 @@ THIS PROGRAM IS THE BEST CHOICE!!
 # How to use it?
 
 You just need to prepare a config file and a machine. 
+
+2020-Mar-4 Update: .tk .ga etc. These free domain isn't support API to update ip anymore.
 ## Write config
 You have to write your email, Global Key, Main Domain, Subdomains and Detect IP URL in config file.
 
